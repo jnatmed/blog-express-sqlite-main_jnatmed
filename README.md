@@ -12,4 +12,8 @@
 4. Iniciar ```npm run start```
 ## Stack
 
+## Otras librerias
+1. jwt - ``` npm install jsonwebtoken ```
+2. jwt - ``` npm install --save @types/jsonwebtoken ```
+
 **Server:** Node, Express, Sqlite
