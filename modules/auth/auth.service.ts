@@ -4,13 +4,16 @@ import { Usuarios } from '../usuarios/usuarios.entity';
 import { iLogin } from '../auth/auth.interfaces';
 import bcrypt from 'bcrypt';
 import logger from '../logger/logger';
+import { generarTokenJWT } from '../utils/jwt.service';
 
 export const login = async (req: Request, res: Response) => {
 	try {
-		const usuarioRepository = dbcontext.getRepository(Usuarios);
+
+      const usuarioRepository = dbcontext.getRepository(Usuarios);
 		// primero busco al usuario
-		const dataRequest = req.body;
-		const buscarUsuario = await usuarioRepository.findOneBy({
+		let dataRequest : iLogin = req.body;
+
+      const buscarUsuario = await usuarioRepository.findOneBy({
 			email: dataRequest.email,
 		});
 
@@ -23,10 +26,26 @@ export const login = async (req: Request, res: Response) => {
 			buscarUsuario.pass
 		);
 
+      if(!compararPass) {
+         throw new Error();
+      }
+
+      //Genero token
+      const payload = {
+         id_usuario : buscarUsuario.id,
+         email : buscarUsuario.email,
+         nombre : buscarUsuario.nombre,
+         apellido : buscarUsuario.apellido,
+      };
+
+      const token = generarTokenJWT(payload);
+
 		res.json({
-			msg: `El resultado del login fue : ${compararPass}`,
+			token : token
 		});
+
       logger.debug(`El resultado del login fue : ${compararPass}`)
+
 	} catch (error) {
       res.json({
          msj : 'Usuario/contraseña incorrecto'
